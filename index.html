@@ -4,41 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PayPal Card Field</title>
-    <script src="https://www.paypal.com/sdk/js?client-id=test&components=buttons,hosted-fields"></script>
+    <script src="https://www.paypal.com/sdk/js?client-id=test&components=buttons,fields"></script>
 </head>
 <body>
     <h1>PayPal Card Field Integration</h1>
-    <form id="card-form">
-        <div id="card-number"></div>
-        <div id="card-expiry"></div>
-        <div id="card-cvv"></div>
-        <button type="submit" id="submit-button">Pay</button>
-    </form>
+    <div id="card-fields-container"></div>
+    <button id="submit-button">Pay</button>
+
     <script>
-        paypal.HostedFields.render({
-            createOrder: function () {
-                return fetch('/create-order', { method: 'post' })
-                    .then(res => res.json())
-                    .then(data => data.orderID);
+        const cardFields = paypal.Fields({
+            fundingSource: paypal.FUNDING.CARD,
+            style: {
+                input: {
+                    color: "#3A3A3A",
+                    fontSize: "16px",
+                },
+                "input.invalid": {
+                    color: "#FF0000",
+                },
+                "input.valid": {
+                    color: "#00FF00",
+                },
             },
-            styles: {
-                '.valid': { color: 'green' },
-                '.invalid': { color: 'red' },
-            },
-            fields: {
-                number: { selector: '#card-number', placeholder: 'Card Number' },
-                expirationDate: { selector: '#card-expiry', placeholder: 'MM/YY' },
-                cvv: { selector: '#card-cvv', placeholder: 'CVV' }
-            }
-        }).then(function (hostedFieldsInstance) {
-            document.getElementById('card-form').addEventListener('submit', function (event) {
-                event.preventDefault();
-                hostedFieldsInstance.submit({
-                    contingencies: ['3D_SECURE']
-                }).then(function (payload) {
-                    alert('Payment Authorized!');
-                    console.log(payload);
-                }).catch(err => console.error(err));
+        }).render('#card-fields-container');
+
+        document.getElementById('submit-button').addEventListener('click', () => {
+            cardFields.submit().then((response) => {
+                console.log("Payment Approved:", response);
+                alert('Payment Successful!');
+            }).catch((err) => {
+                console.error("Payment Failed:", err);
+                alert('Payment Failed!');
             });
         });
     </script>
