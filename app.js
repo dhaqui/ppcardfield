@@ -4,7 +4,7 @@ paypal
 .Buttons({
 // Sets up the transaction when a payment button is clicked
 createOrder: function (data) {
-return fetch("ppcardfield.vercel.app//api/orders", {
+return fetch("api/orders", {
  method: "POST",
  // Use the "body" parameter to optionally pass additional order information
  // such as product ID or amount
@@ -17,7 +17,7 @@ return fetch("ppcardfield.vercel.app//api/orders", {
 },
 // Finalize the transaction after payer approval
 onApprove: function (data) {
-return fetch(`ppcardfield.vercel.app/api/orders/${data.orderID}/capture`, {
+return fetch(`api/orders/${data.orderID}/capture`, {
  method: "POST",
 })
  .then((response) => response.json())
@@ -44,7 +44,7 @@ onError: function (error) {
 // Create the Card Fields Component and define callbacks
 const cardField = paypal.CardFields({
 createOrder: function (data) {
-return fetch("ppcardfield.vercel.app/api/orders", {
+return fetch("api/orders", {
 method: "POST",
 body: {
  paymentSource: data.paymentSource,
@@ -59,7 +59,7 @@ body: {
 },
 onApprove: function (data) {
 const { orderID } = data;
-return fetch(`ppcardfield.vercel.app/api/orders/${orderID}/capture`, {
+return fetch(`api/orders/${orderID}/capture`, {
 method: "POST",
 })
 .then((res) => {
